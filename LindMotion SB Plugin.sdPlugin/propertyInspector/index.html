@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Streamer.bot</title>
+    <link rel="stylesheet" href="pi.css" />
+  </head>
+  <body>
+    <div id="conn-status" class="status disconnected">DISCONNECTED</div>
+
+    <section id="section-connection" data-section>
+      <h2>Streamer.bot connection</h2>
+      <div class="row"><label>IP</label><input id="host" value="127.0.0.1" /></div>
+      <div class="row"><label>Port</label><input id="port" type="number" value="8080" /></div>
+      <div class="row"><label>Password</label><input id="password" type="password" /></div>
+      <div class="actions">
+        <button id="save-connection">Save</button>
+        <button id="btn-connect">Connect</button>
+        <button id="btn-disconnect" class="secondary">Disconnect</button>
+      </div>
+    </section>
+
+    <section id="section-connection-mini" class="hidden" data-section>
+      <div id="conn-status-mini" class="status disconnected">DISCONNECTED</div>
+    </section>
+
+    <section id="section-execute" class="hidden" data-section>
+      <h2>Streamer.bot action</h2>
+      <div class="row"><label>Search</label><input id="action-search" placeholder="name or group" /></div>
+      <div class="row"><label>Group</label><select id="action-group"><option value="">All groups</option></select></div>
+      <div class="actions"><button id="btn-refresh" class="secondary">Refresh actions</button></div>
+      <div id="action-list" class="list"></div>
+    </section>
+
+    <section id="section-args" class="hidden" data-section>
+      <h2>Arguments</h2>
+      <div class="row">
+        <label>JSON object or key=value lines</label>
+        <textarea id="args-text" placeholder='{"scene":"Starting Soon"}'></textarea>
+      </div>
+    </section>
+
+    <section id="section-random" class="hidden" data-section>
+      <h2>Random action pool</h2>
+      <p>Select actions in the list below, then add them to the pool.</p>
+      <div id="random-list">none</div>
+      <div class="actions">
+        <button id="add-random">Add selected</button>
+        <button id="clear-random" class="secondary">Clear</button>
+      </div>
+    </section>
+
+    <section id="section-sequence" class="hidden" data-section>
+      <h2>Action sequence</h2>
+      <div id="sequence-list">none</div>
+      <div class="row"><label>Delay after step (ms)</label><input id="seq-delay" type="number" value="0" /></div>
+      <div class="row"><label>Step args</label><textarea id="seq-args"></textarea></div>
+      <div class="actions">
+        <button id="add-sequence">Add selected</button>
+        <button id="clear-sequence" class="secondary">Clear</button>
+      </div>
+    </section>
+
+    <section id="section-chat" class="hidden" data-section>
+      <h2>Chat message</h2>
+      <div class="row">
+        <label>Platform</label>
+        <select id="chat-platform">
+          <option value="twitch">Twitch</option>
+          <option value="kick">Kick</option>
+          <option value="youtube">YouTube</option>
+        </select>
+      </div>
+      <div class="row inline"><input id="chat-bot" type="checkbox" checked /><label>Send as bot</label></div>
+      <div class="row"><label>Message</label><textarea id="chat-message"></textarea></div>
+    </section>
+
+    <section id="section-named" class="hidden" data-section>
+      <h2>Named Streamer.bot action</h2>
+      <div id="named-info"></div>
+      <div id="named-args"></div>
+    </section>
+
+    <section id="section-status" class="hidden" data-section>
+      <h2>Live status</h2>
+      <p>This key updates from Streamer.bot events. It does not invent values if the integration is offline.</p>
+    </section>
+
+    <section id="section-look" data-section>
+      <h2>Button look</h2>
+      <div class="row"><label>Title</label><input id="button-title" /></div>
+      <div class="row"><label>Font size</label><input id="font-size" type="number" min="8" max="32" value="12" /></div>
+      <div class="row"><label>Background</label><input id="background" type="color" value="#333333" /></div>
+      <div class="row"><label>Custom PNG</label><input id="icon-file" type="file" accept="image/png" /></div>
+      <div class="actions"><button id="clear-icon" class="secondary">Clear icon</button></div>
+      <div id="preview" class="preview">PREVIEW</div>
+    </section>
+
+    <script src="pi.js"></script>
+  </body>
+</html>

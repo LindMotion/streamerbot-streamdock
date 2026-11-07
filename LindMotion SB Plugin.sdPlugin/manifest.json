@@ -1,0 +1,346 @@
+{
+  "SDKVersion": 2,
+  "Author": "Lindmotion",
+  "Name": "Streamer.bot",
+  "Description": "Control Streamer.bot from a FIFINE AmpliGame D6 / StreamDock keypad.",
+  "Icon": "imgs/plugin.png",
+  "Category": "Streamer.bot",
+  "CategoryIcon": "imgs/category.png",
+  "Version": "1.0.0",
+  "URL": "https://docs.streamer.bot/api/websocket/requests",
+  "CodePath": "plugin/index.js",
+  "CodePathWin": "plugin/index.js",
+  "CodePathMac": "plugin/index.js",
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "3.10.188.226"
+  },
+  "Nodejs": {
+    "Version": "20"
+  },
+  "Actions": [
+    {
+      "UUID": "com.lindmotion.streamerbot.connection",
+      "Name": "Connection Status",
+      "Tooltip": "Shows Streamer.bot connection status. Press to connect or disconnect.",
+      "Icon": "imgs/connection.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": false,
+      "States": [
+        { "Image": "imgs/connection.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.execute",
+      "Name": "Execute Action",
+      "Tooltip": "Run a Streamer.bot action selected in the property inspector.",
+      "Icon": "imgs/execute.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/execute.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.executeArgs",
+      "Name": "Execute Action with Arguments",
+      "Tooltip": "Run a Streamer.bot action and pass custom arguments.",
+      "Icon": "imgs/execute-args.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/execute-args.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.executeRandom",
+      "Name": "Execute Random Action",
+      "Tooltip": "Run one random Streamer.bot action from a saved list.",
+      "Icon": "imgs/execute-random.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/execute-random.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.executeSequence",
+      "Name": "Execute Action Sequence",
+      "Tooltip": "Run Streamer.bot actions in order.",
+      "Icon": "imgs/execute-sequence.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": false,
+      "States": [
+        { "Image": "imgs/execute-sequence.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.obs.startStreaming",
+      "Name": "Start Streaming",
+      "Tooltip": "Runs Streamer.bot action D6 Start Streaming.",
+      "Icon": "imgs/stream-start.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/stream-start.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.obs.stopStreaming",
+      "Name": "Stop Streaming",
+      "Tooltip": "Runs Streamer.bot action D6 Stop Streaming.",
+      "Icon": "imgs/stream-stop.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/stream-stop.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.obs.startRecording",
+      "Name": "Start Recording",
+      "Tooltip": "Runs Streamer.bot action D6 Start Recording.",
+      "Icon": "imgs/record-start.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/record-start.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.obs.stopRecording",
+      "Name": "Stop Recording",
+      "Tooltip": "Runs Streamer.bot action D6 Stop Recording.",
+      "Icon": "imgs/record-stop.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/record-stop.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.obs.changeScene",
+      "Name": "Change Scene",
+      "Tooltip": "Runs Streamer.bot action D6 Change Scene with a scene argument.",
+      "Icon": "imgs/scene.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/scene.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.obs.toggleSource",
+      "Name": "Toggle Source",
+      "Tooltip": "Runs Streamer.bot action D6 Toggle Source.",
+      "Icon": "imgs/source.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/source.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.obs.muteMic",
+      "Name": "Mute Microphone",
+      "Tooltip": "Runs Streamer.bot action D6 Mute Microphone.",
+      "Icon": "imgs/mute-obs.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/mute-obs.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.twitch.shoutout",
+      "Name": "Shoutout",
+      "Tooltip": "Runs Streamer.bot action D6 Shoutout.",
+      "Icon": "imgs/shoutout.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/shoutout.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.twitch.announce",
+      "Name": "Announce",
+      "Tooltip": "Runs Streamer.bot action D6 Announce.",
+      "Icon": "imgs/announce.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/announce.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.chat.message",
+      "Name": "Chat Message",
+      "Tooltip": "Sends a chat message through the Streamer.bot SendMessage API.",
+      "Icon": "imgs/chat.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/chat.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.chat.command",
+      "Name": "Trigger Custom Bot Command",
+      "Tooltip": "Runs Streamer.bot action D6 Trigger Custom Bot Command, or sends the command text to chat.",
+      "Icon": "imgs/command.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/command.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.audio.toggleMic",
+      "Name": "Toggle Microphone",
+      "Tooltip": "Runs Streamer.bot action D6 Toggle Microphone.",
+      "Icon": "imgs/mic.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/mic.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.audio.toggleMusic",
+      "Name": "Toggle Music",
+      "Tooltip": "Runs Streamer.bot action D6 Toggle Music.",
+      "Icon": "imgs/music.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/music.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.audio.soundboard",
+      "Name": "Soundboard",
+      "Tooltip": "Runs Streamer.bot action D6 Soundboard.",
+      "Icon": "imgs/soundboard.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/soundboard.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.audio.presets",
+      "Name": "Audio Presets",
+      "Tooltip": "Runs Streamer.bot action D6 Audio Presets.",
+      "Icon": "imgs/preset.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": true,
+      "States": [
+        { "Image": "imgs/preset.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.status.streaming",
+      "Name": "Streaming Indicator",
+      "Tooltip": "Live/offline from Streamer.bot OBS events.",
+      "Icon": "imgs/status-stream.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "States": [
+        { "Image": "imgs/status-stream.png", "TitleAlignment": "bottom", "FontSize": "9", "Name": "Live" },
+        { "Image": "imgs/stream-stop.png", "TitleAlignment": "bottom", "FontSize": "9", "Name": "Offline" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.status.recording",
+      "Name": "Recording Indicator",
+      "Tooltip": "Recording status from Streamer.bot OBS events.",
+      "Icon": "imgs/status-record.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "States": [
+        { "Image": "imgs/status-record.png", "TitleAlignment": "bottom", "FontSize": "9", "Name": "Recording" },
+        { "Image": "imgs/record-stop.png", "TitleAlignment": "bottom", "FontSize": "9", "Name": "Idle" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.status.microphone",
+      "Name": "Microphone Status",
+      "Tooltip": "Microphone status from Streamer.bot/OBS events, or last known toggle.",
+      "Icon": "imgs/status-mic.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "States": [
+        { "Image": "imgs/status-mic.png", "TitleAlignment": "bottom", "FontSize": "9", "Name": "Unmuted" },
+        { "Image": "imgs/mute-obs.png", "TitleAlignment": "bottom", "FontSize": "9", "Name": "Muted" }
+      ]
+    },
+    {
+      "UUID": "com.lindmotion.streamerbot.status.viewers",
+      "Name": "Viewer Counter",
+      "Tooltip": "Viewer count from Streamer.bot GetActiveViewers or Kick/Twitch events. Shows n/a when unavailable.",
+      "Icon": "imgs/status-viewers.png",
+      "PropertyInspectorPath": "propertyInspector/index.html",
+      "Controllers": ["Keypad"],
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": false,
+      "States": [
+        { "Image": "imgs/status-viewers.png", "TitleAlignment": "bottom", "FontSize": "9" }
+      ]
+    }
+  ]
+}

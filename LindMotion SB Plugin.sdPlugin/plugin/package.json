@@ -1,0 +1,7 @@
+{
+  "name": "com.lindmotion.streamerbot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FIFINE Control Deck / StreamDock plugin for Streamer.bot",
+  "main": "index.js"
+}

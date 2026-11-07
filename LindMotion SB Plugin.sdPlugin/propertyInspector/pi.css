@@ -1,0 +1,137 @@
+:root {
+  color-scheme: dark;
+  --bg: #1b1d24;
+  --panel: #242833;
+  --line: #3a4050;
+  --text: #f3f5f8;
+  --muted: #9aa3b5;
+  --accent: #6c7cff;
+  --ok: #2ea66a;
+  --warn: #d39b2f;
+  --bad: #d4534b;
+  font-family: Segoe UI, sans-serif;
+}
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  padding: 10px 12px 16px;
+  font-size: 12px;
+}
+
+h2, h3 {
+  margin: 12px 0 8px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.row.inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+label {
+  color: var(--muted);
+}
+
+input, select, textarea, button {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font: inherit;
+}
+
+textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+button {
+  cursor: pointer;
+  background: var(--accent);
+  border: 0;
+  color: white;
+}
+
+button.secondary {
+  background: #3a4254;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.status {
+  padding: 8px;
+  border-radius: 8px;
+  background: #323846;
+  margin-bottom: 10px;
+}
+
+.status.connected { border-left: 4px solid var(--ok); }
+.status.disconnected { border-left: 4px solid var(--bad); }
+.status.reconnecting, .status.connecting, .status.authenticating { border-left: 4px solid var(--warn); }
+
+.list {
+  max-height: 180px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.item {
+  padding: 6px 8px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--line);
+}
+
+.item:hover, .item.active {
+  background: #323a4d;
+}
+
+.preview {
+  width: 144px;
+  height: 144px;
+  border-radius: 18px;
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: #333;
+}
+
+.hidden { display: none !important; }
+
+.warn {
+  color: #ffb4ab;
+}
+
+.ok {
+  color: #8be2b0;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
