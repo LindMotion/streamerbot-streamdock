@@ -15,6 +15,8 @@ class WebSocketClient extends EventEmitter {
     this.open = false;
     this.closed = false;
     this.key = crypto.randomBytes(16).toString('base64');
+    this.fragments = [];
+    this.fragmentOpcode = 0;
     this.connect();
   }
 
@@ -27,6 +29,7 @@ class WebSocketClient extends EventEmitter {
       this.socket.write(
         `GET ${path} HTTP/1.1\r\n` +
           `Host: ${this.url.host}\r\n` +
+          `Origin: http://${this.url.host}\r\n` +
           'Upgrade: websocket\r\n' +
           'Connection: Upgrade\r\n' +
           `Sec-WebSocket-Key: ${this.key}\r\n` +
@@ -81,6 +84,7 @@ class WebSocketClient extends EventEmitter {
 
   parseFrames() {
     while (this.buffer.length >= 2) {
+      const fin = (this.buffer[0] & 0x80) !== 0;
       const opcode = this.buffer[0] & 15;
       const masked = (this.buffer[1] & 128) !== 0;
       let len = this.buffer[1] & 127;
@@ -111,7 +115,22 @@ class WebSocketClient extends EventEmitter {
         this.writeFrame(payload, 10);
         continue;
       }
-      if (opcode === 1 || opcode === 2) this.emit('message', payload.toString('utf8'));
+      if (opcode === 10) continue;
+      if (opcode === 1 || opcode === 2) {
+        this.fragments = [payload];
+        this.fragmentOpcode = opcode;
+      } else if (opcode === 0) {
+        this.fragments.push(payload);
+      } else {
+        continue;
+      }
+      if (fin) {
+        const data = Buffer.concat(this.fragments);
+        this.fragments = [];
+        const kind = this.fragmentOpcode;
+        this.fragmentOpcode = 0;
+        if (kind === 1 || kind === 2) this.emit('message', data.toString('utf8'));
+      }
     }
   }
 

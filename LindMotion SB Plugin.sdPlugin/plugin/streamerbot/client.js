@@ -3,7 +3,13 @@
 const crypto = require('crypto');
 const { EventEmitter } = require('events');
 const { WebSocketClient } = require('../host/websocket');
-const { DEFAULT_GLOBAL } = require('../constants');
+const {
+  DEFAULT_GLOBAL,
+  STREAMERBOT_HOME,
+  APPLICATION_EVENTS,
+  APPLICATION_REFRESH_TYPES
+} = require('../constants');
+const { watchStreamerbotData } = require('./watch');
 
 function authString(password, salt, challenge) {
   const secret = crypto.createHash('sha256').update(String(password) + String(salt), 'utf8').digest('base64');
@@ -27,6 +33,10 @@ class StreamerbotClient extends EventEmitter {
     this.manualDisconnect = false;
     this.wantedEvents = {};
     this.session = null;
+    this.refreshTimer = null;
+    this.refreshing = false;
+    this.lastActionRefresh = null;
+    this.stopWatchFn = null;
   }
 
   configure(settings) {
@@ -34,7 +44,8 @@ class StreamerbotClient extends EventEmitter {
       host: settings.host || '127.0.0.1',
       port: Number(settings.port || 8080),
       password: settings.password || '',
-      autoConnect: settings.autoConnect !== false
+      autoConnect: settings.autoConnect !== false,
+      dataPath: settings.dataPath || STREAMERBOT_HOME
     };
   }
 
@@ -55,7 +66,9 @@ class StreamerbotClient extends EventEmitter {
       port: this.settings.port,
       lastError: this.lastError,
       instance: this.info || null,
-      actionCount: this.actions.length
+      version: this.info?.version || '',
+      actionCount: this.actions.length,
+      lastActionRefresh: this.lastActionRefresh
     };
   }
 
@@ -92,11 +105,14 @@ class StreamerbotClient extends EventEmitter {
   disconnect() {
     this.manualDisconnect = true;
     this.clearReconnect();
+    this.clearRefresh();
+    this.stopWatch();
     this.closeSocket();
     this.setStatus('disconnected', '');
   }
 
   closeSocket() {
+    this.stopWatch();
     if (this.ws) {
       try {
         this.ws.close();
@@ -106,6 +122,44 @@ class StreamerbotClient extends EventEmitter {
     }
     this.ws = null;
     this.session = null;
+  }
+
+  startWatch() {
+    this.stopWatch();
+    const host = String(this.settings.host || '').toLowerCase();
+    if (host !== '127.0.0.1' && host !== 'localhost') return;
+    this.stopWatchFn = watchStreamerbotData(
+      this.settings.dataPath || STREAMERBOT_HOME,
+      (reason) => this.scheduleRefresh(`file:${reason}`),
+      this.log
+    );
+  }
+
+  stopWatch() {
+    if (this.stopWatchFn) {
+      try {
+        this.stopWatchFn();
+      } catch {
+        /* ignore */
+      }
+      this.stopWatchFn = null;
+    }
+  }
+
+  clearRefresh() {
+    if (this.refreshTimer) {
+      clearTimeout(this.refreshTimer);
+      this.refreshTimer = null;
+    }
+  }
+
+  scheduleRefresh(reason) {
+    this.clearRefresh();
+    this.refreshTimer = setTimeout(() => {
+      this.refreshTimer = null;
+      if (this.status !== 'connected') return;
+      this.refreshActions(reason).catch((err) => this.log.warn('action refresh failed', err.message));
+    }, 350);
   }
 
   scheduleReconnect() {
@@ -148,6 +202,9 @@ class StreamerbotClient extends EventEmitter {
     }
     if (msg.event && msg.event.source) {
       this.emit('event', msg);
+      if (msg.event.source === 'Application' && APPLICATION_REFRESH_TYPES.has(msg.event.type)) {
+        this.scheduleRefresh(msg.event.type);
+      }
       return;
     }
     if (msg.id && this.pending.has(msg.id)) {
@@ -193,13 +250,23 @@ class StreamerbotClient extends EventEmitter {
     this.backoff = 1000;
     this.setStatus('connected', '');
     try {
-      await this.refreshActions();
+      await this.refreshActions('hello');
       await this.applySubscriptions();
-      const info = await this.request({ request: 'GetInfo' }).catch(() => null);
+      const info = await this.request({ request: 'GetInfo' }).catch((err) => {
+        this.log.warn('GetInfo failed', err.message);
+        return null;
+      });
       if (info?.info) this.info = info.info;
+      this.log.info('Streamer.bot instance', {
+        name: this.info?.name,
+        version: this.info?.version,
+        os: this.info?.os,
+        source: this.info?.source
+      });
     } catch (err) {
       this.log.warn('post-connect setup failed', err.message);
     }
+    this.startWatch();
     this.emit('connected', this.snapshot());
   }
 
@@ -244,12 +311,26 @@ class StreamerbotClient extends EventEmitter {
     this.pending.clear();
   }
 
-  async refreshActions() {
-    const res = await this.request({ request: 'GetActions' });
-    this.actions = Array.isArray(res.actions) ? res.actions : [];
-    this.emit('actions', this.actions);
-    this.log.info(`loaded ${this.actions.length} Streamer.bot actions`);
-    return this.actions;
+  async refreshActions(reason) {
+    if (this.refreshing) {
+      this.scheduleRefresh(reason || 'busy');
+      return this.actions;
+    }
+    this.refreshing = true;
+    try {
+      const res = await this.request({ request: 'GetActions' });
+      this.actions = Array.isArray(res.actions) ? res.actions : [];
+      this.lastActionRefresh = {
+        at: new Date().toISOString(),
+        reason: reason || 'GetActions',
+        count: this.actions.length
+      };
+      this.emit('actions', this.actions);
+      this.log.info(`loaded ${this.actions.length} Streamer.bot actions`, reason || 'GetActions');
+      return this.actions;
+    } finally {
+      this.refreshing = false;
+    }
   }
 
   findAction(idOrName) {
@@ -308,12 +389,27 @@ class StreamerbotClient extends EventEmitter {
     if (this.status === 'connected') this.applySubscriptions().catch((err) => this.log.warn(err.message));
   }
 
+  mergeEvents(extra = {}) {
+    const out = {};
+    const sources = new Set([
+      ...Object.keys(APPLICATION_EVENTS),
+      ...Object.keys(this.wantedEvents || {}),
+      ...Object.keys(extra)
+    ]);
+    for (const source of sources) {
+      const names = new Set([
+        ...(APPLICATION_EVENTS[source] || []),
+        ...(this.wantedEvents[source] || []),
+        ...(extra[source] || [])
+      ]);
+      if (names.size) out[source] = [...names];
+    }
+    return out;
+  }
+
   async applySubscriptions() {
-    const events = this.wantedEvents;
-    const keys = Object.keys(events).filter((k) => events[k]?.length);
-    if (!keys.length) return;
-    const payload = {};
-    for (const k of keys) payload[k] = events[k];
+    const payload = this.mergeEvents();
+    if (!Object.keys(payload).length) return;
     await this.request({ request: 'Subscribe', events: payload });
     this.log.info('subscribed', payload);
   }

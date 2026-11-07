@@ -81,6 +81,56 @@ function registerActions(sd, sb, getGlobal, log) {
     };
   }
 
+  function rematchStoredAction(entry) {
+    if (!entry || (!entry.id && !entry.name)) return { entry, changed: false };
+    const found = (entry.id && sb.findAction(entry.id)) || (entry.name && sb.findAction(entry.name));
+    if (!found) return { entry, changed: false };
+    if (found.id === entry.id && found.name === entry.name) return { entry, changed: false };
+    return { entry: { ...entry, id: found.id, name: found.name }, changed: true };
+  }
+
+  function rematchList(list) {
+    if (!Array.isArray(list) || !list.length) return { list, changed: false };
+    let changed = false;
+    const next = list.map((item) => {
+      const result = rematchStoredAction(item);
+      if (result.changed) changed = true;
+      return result.entry;
+    });
+    return { list: next, changed };
+  }
+
+  function rematchKeyActions() {
+    for (const key of keys.values()) {
+      const settings = { ...key.settings };
+      let changed = false;
+      if (settings.actionId || settings.actionName) {
+        const result = rematchStoredAction({ id: settings.actionId, name: settings.actionName });
+        if (result.changed) {
+          settings.actionId = result.entry.id;
+          settings.actionName = result.entry.name;
+          changed = true;
+        }
+      }
+      const random = rematchList(settings.randomActions);
+      if (random.changed) {
+        settings.randomActions = random.list;
+        changed = true;
+      }
+      const sequence = rematchList(settings.sequence);
+      if (sequence.changed) {
+        settings.sequence = sequence.list.map((step, i) => ({
+          ...settings.sequence[i],
+          ...step
+        }));
+        changed = true;
+      }
+      if (!changed) continue;
+      key.settings = settings;
+      sd.setSettings(key.context, settings);
+    }
+  }
+
   function namedInfo(uuid) {
     const spec = NAMED_ACTIONS[uuid];
     if (!spec) return null;
@@ -429,7 +479,11 @@ function registerActions(sd, sb, getGlobal, log) {
     paintStatusKeys();
     refreshPi();
   });
-  sb.on('actions', () => refreshPi());
+  sb.on('actions', () => {
+    rematchKeyActions();
+    for (const key of keys.values()) paintKey(key);
+    refreshPi();
+  });
   sb.on('connected', () => {
     syncSubscriptions();
     refreshPi();

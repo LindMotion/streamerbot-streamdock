@@ -29,6 +29,12 @@ h2, h3 {
   font-weight: 650;
 }
 
+.muted {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 0 0 8px;
+}
+
 .row {
   display: flex;
   flex-direction: column;

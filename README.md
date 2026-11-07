@@ -16,10 +16,14 @@ To remove it, double-click **`uninstall.bat`**.
 
 ## Streamer.bot setup
 
-1. In Streamer.bot, enable the **WebSocket Server** (default `127.0.0.1:8080`).
+This plugin talks to Streamer.bot **v1.0.7** over the documented WebSocket Server (`ws://127.0.0.1:8080/`). On this PC that install is `D:\STREAMERBOT`.
+
+1. In Streamer.bot, enable the **WebSocket Server** (default `127.0.0.1:8080`) and leave **Auto Start** on.
 2. If you enabled a password, enter it on the **Connection Status** key.
 3. Drag **Connection Status** onto a D6 key, save IP/port, and press Connect.
 4. Drag **Execute Action**, open the property inspector, pick an action, press the key.
+
+The action list refreshes by itself when you add, edit, rename, enable/disable, or delete actions or commands in Streamer.bot. It uses the documented `Application` WebSocket events, and also watches `D:\STREAMERBOT\data\actions.json` and `commands.json` so file saves are not missed. The property inspector group list and bound action IDs update with those refreshes. You can still press **Refresh actions** by hand.
 
 ### Named actions for OBS / Twitch / audio keys
 

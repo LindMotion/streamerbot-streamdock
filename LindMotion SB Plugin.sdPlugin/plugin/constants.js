@@ -68,10 +68,28 @@ const DEFAULT_GLOBAL = {
   autoConnect: true
 };
 
+const STREAMERBOT_HOME = 'D:\\STREAMERBOT';
+
+const APPLICATION_EVENTS = {
+  Application: [
+    'ActionAdded',
+    'ActionDeleted',
+    'ActionUpdated',
+    'CommandAdded',
+    'CommandDeleted',
+    'CommandUpdated'
+  ]
+};
+
+const APPLICATION_REFRESH_TYPES = new Set(APPLICATION_EVENTS.Application);
+
 module.exports = {
   PLUGIN_UUID,
   ACTIONS,
   NAMED_ACTIONS,
   COLORS,
-  DEFAULT_GLOBAL
+  DEFAULT_GLOBAL,
+  STREAMERBOT_HOME,
+  APPLICATION_EVENTS,
+  APPLICATION_REFRESH_TYPES
 };

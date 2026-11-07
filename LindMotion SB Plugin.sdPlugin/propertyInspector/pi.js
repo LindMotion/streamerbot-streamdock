@@ -8,7 +8,8 @@ const PI = {
   settings: {},
   global: { host: '127.0.0.1', port: 8080, password: '', autoConnect: true },
   actions: [],
-  named: null
+  named: null,
+  snapshot: null
 };
 
 function $(id) {
@@ -86,9 +87,10 @@ function renderConnection(snapshot) {
     const el = $(id);
     if (!el) continue;
     el.className = `status ${statusClass(state)}`;
+    const version = snapshot?.version || snapshot?.instance?.version;
     el.textContent = `${state.toUpperCase()}  ${snapshot?.host || ''}:${snapshot?.port || ''}${
-      snapshot?.lastError ? ` — ${snapshot.lastError}` : ''
-    }`;
+      version ? `  v${version}` : ''
+    }${snapshot?.lastError ? ` — ${snapshot.lastError}` : ''}`;
   }
   if ($('host')) $('host').value = PI.global.host || '127.0.0.1';
   if ($('port')) $('port').value = PI.global.port || 8080;
@@ -117,7 +119,8 @@ function renderActions(filter) {
     list.appendChild(item);
   }
   const sel = $('action-group');
-  if (sel && sel.options.length <= 1) {
+  if (sel) {
+    const prev = sel.value || '';
     sel.innerHTML = '<option value="">All groups</option>';
     for (const g of [...groups].filter(Boolean).sort()) {
       const opt = document.createElement('option');
@@ -125,6 +128,13 @@ function renderActions(filter) {
       opt.textContent = g;
       sel.appendChild(opt);
     }
+    if ([...sel.options].some((o) => o.value === prev)) sel.value = prev;
+  }
+  const note = $('action-refresh');
+  if (note) {
+    const last = PI.snapshot?.lastActionRefresh;
+    if (last) note.textContent = `${last.count} actions · live update (${last.reason})`;
+    else note.textContent = PI.actions.length ? `${PI.actions.length} actions` : 'No actions loaded';
   }
 }
 
@@ -215,7 +225,8 @@ function onMessage(msg) {
     if (p.actions) PI.actions = p.actions;
     if (p.settings) PI.settings = p.settings;
     if (p.named !== undefined) PI.named = p.named;
-    renderConnection(p.snapshot);
+    if (p.snapshot) PI.snapshot = p.snapshot;
+    renderConnection(p.snapshot || PI.snapshot);
     fillSettings();
   }
 }
